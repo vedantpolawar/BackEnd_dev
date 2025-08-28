@@ -1,26 +1,29 @@
 const { getUser } = require("../service/auth");
-async function restrictToLoggedinUserOnly(req, res, next) {
-  const userUid = req.headers["authorization"];
-  const token = userUid.split("Bearer ")[1];
-  if (!userUid) return res.redirect("./login");
+function checkForAuthentication(req, res, next) {
+  const userUid = req.cookies?.uid;
+  console.log("Cookies:", req.cookies);
+  console.log("userUid:", userUid);
 
-  const user = getUser(token);
-  if (!user) return res.redirect("/login");
-
+  req.user = null;
+  if (!userUid) return next();
+  const user = getUser(userUid);
+  console.log("GET USER :", user);
   req.user = user;
-  next();
+  return next();
 }
-async function checkAuth(req, res, next) {
-  const userUid = req.headers["Authorization"];
-  console.log(userUid);
-  const token = userUid.split("Bearer ")[1];
-
-  const user = getUser(token);
-
-  req.user = user;
-  next();
+function restrictTo(roles = []) {
+  return function (req, res, next) {
+    console.log(req.user);
+    if (!req.user) {
+      return res.redirect("/login");
+    }
+    if (!roles.includes(req.user.role)) {
+      return res.end("UNAuthorized ACCESS LAVDYA GHARI JAA CHUP CHAP");
+    }
+    return next();
+  };
 }
 module.exports = {
-  restrictToLoggedinUserOnly,
-  checkAuth,
+  checkForAuthentication,
+  restrictTo,
 };

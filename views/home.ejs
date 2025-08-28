@@ -31,6 +31,7 @@
             <th>ShortID</th>
             <th>Redirect</th>
             <th>Clicks</th>
+            <th>Created By :</th>
           </tr>
         </thead>
         <tbody>
@@ -40,6 +41,7 @@
             <td><%= url.shortId %></td>
             <td><%= url.redirectUrl %></td>
             <td><%=url.visitHistory.length %></td>
+            <td><%= url.createdBy%></td>
           </tr>
           <% }) %>
         </tbody>
